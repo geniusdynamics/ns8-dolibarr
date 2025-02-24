@@ -45,7 +45,7 @@ buildah config --entrypoint=/ \
     --label="org.nethserver.authorizations=traefik@node:routeadm cluster:accountconsumer" \
     --label="org.nethserver.tcp-ports-demand=1" \
     --label="org.nethserver.rootfull=0" \
-    --label="org.nethserver.images=docker.io/mariadb:10.11.5 docker.io/tuxgasy/dolibarr:${DOLIBARR_TAG}" \
+    --label="org.nethserver.images=docker.io/mariadb:10.11.5 docker.io/dolibarr/dolibarr:${DOLIBARR_TAG}" \
     "${container}"
 # Commit the image
 buildah commit "${container}" "${repobase}/${reponame}"
