@@ -12,12 +12,20 @@ import agent
 # Try to parse the stdin as JSON.
 # If parsing fails, output everything to stderr
 data = json.load(sys.stdin)
-#
+
+
+# bind user to the domain
+if ldap_domain:
+    agent.bind_user_domains([ldap_domain])
+else:
+    agent.bind_user_domains([])
+
 # Setup Values
 DOLI_ADMIN_LOGIN = data.get("DOLI_ADMIN_LOGIN", "admin")
 DOLI_ADMIN_PASSWORD = data.get("DOLI_ADMIN_PASSWORD", "admin")
 
 agent.set_env("DOLI_ADMIN_LOGIN", DOLI_ADMIN_LOGIN)
 agent.set_env("DOLI_ADMIN_PASSWORD", DOLI_ADMIN_PASSWORD)
-
+agent.set_env("ADMIN_USERS", data.get("admin_users","administrator").lower())
+agent.set_env("LDAP_DOMAIN", data["ldap_domain"])
 agent.dump_env()
