@@ -14,7 +14,7 @@ images=()
 repobase="${REPOBASE:-ghcr.io/geniusdynamics}"
 # Configure the image name
 reponame="dolibarr"
-DOLIBARR_TAG="19.0.2"
+DOLIBARR_TAG="20.0.3"
 # Create a new empty container image
 container=$(buildah from scratch)
 
