@@ -30,12 +30,12 @@ ExecStart=/usr/bin/podman run --conmon-pidfile %t/dolibarr-app.pid \
     --env DOLI_URL_ROOT=${DOLI_URL_ROOT} \
     --env PHP_INI_DATE_TIMEZONE=Africa/Nairobi \
     --env DOLI_AUTH='ldap,dolibarr' \
-    --env DOLI_LDAP_HOST=${DOLIBARR_LDAP_HOST} \
-    --env DOLI_LDAP_PORT=${DOLIBARR_LDAP_PORT} \
+    --env DOLI_LDAP_HOST=${DOLI_LDAP_HOST} \
+    --env DOLI_LDAP_PORT=${DOLI_LDAP_PORT} \
     --env DOLI_LDAP_VERSION=3 \
     --env DOLI_LDAP_SERVER_TYPE=openldap \
     --env DOLI_LDAP_DN=ou=users,cn=users,cn=accounts,${DOLIBARR_LDAP_BASE} \
-    --env DOLI_LDAP_BIND_PASS=${DOLIBARR_LDAP_PASS} \
+    --env DOLI_LDAP_BIND_PASS=${DOLI_LDAP_PASS} \
     --env DOLI_LDAP_BIND_DN=uid=admin,cn=users,cn=accounts,${DOLIBARR_LDAP_USER} \
     --env DOLI_LDAP_DEBUG=true \
     --volume=dolidoc:/var/www/documents \
