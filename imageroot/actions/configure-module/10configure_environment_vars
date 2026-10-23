@@ -6,6 +6,8 @@
 #
 
 import json
+import os
+import secrets
 import sys
 import agent
 
@@ -19,5 +21,10 @@ DOLI_ADMIN_PASSWORD = data.get("DOLI_ADMIN_PASSWORD", "admin")
 
 agent.set_env("DOLI_ADMIN_LOGIN", DOLI_ADMIN_LOGIN)
 agent.set_env("DOLI_ADMIN_PASSWORD", DOLI_ADMIN_PASSWORD)
+
+# Key of dolEncrypt(); the image falls back to the public value
+# "myinstanceuniquekey" without it. Generated once, never changed.
+if not os.environ.get("DOLI_INSTANCE_UNIQUE_ID"):
+    agent.set_env("DOLI_INSTANCE_UNIQUE_ID", secrets.token_hex(32))
 
 agent.dump_env()
