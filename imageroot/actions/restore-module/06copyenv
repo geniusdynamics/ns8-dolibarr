@@ -20,4 +20,8 @@ for evar in [
     ]:
     agent.set_env(evar, original_environment[evar])
 
+# Secrets stored by Dolibarr are encrypted with this key
+if original_environment.get("DOLI_INSTANCE_UNIQUE_ID"):
+    agent.set_env("DOLI_INSTANCE_UNIQUE_ID", original_environment["DOLI_INSTANCE_UNIQUE_ID"])
+
 agent.dump_env()
