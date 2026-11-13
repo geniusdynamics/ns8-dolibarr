@@ -1,14 +1,18 @@
 {
   "name": "Dolibarr",
   "description": {
-    "en": "One web suite to manage all of your business..."
+    "en": "Dolibarr is a web suite for small and medium businesses covering invoicing, CRM, stock and accounting.",
+    "it": "Dolibarr è una suite web per piccole e medie imprese con fatturazione, CRM, magazzino e contabilità."
   },
-  "categories": [],
+  "categories": [
+    "office"
+  ],
   "authors": [
     {
       "name": "Martin Bhuong",
       "email": "martin@genius.ke"
-    },    {
+    },
+    {
       "name": "Kemboi Elvis",
       "email": "kemboielvis@genius.ke"
     }
