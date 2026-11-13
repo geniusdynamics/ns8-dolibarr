@@ -1,0 +1,21 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# The Dolibarr image upgrades the database only while install.lock is
+# missing: it dumps the database, runs the upgrade (restoring the dump on
+# failure) and creates the lock again. With the lock in place a new image
+# keeps the old schema and every page redirects to /install.
+
+set -e
+
+# Redirect any output to the journal (stderr)
+exec 1>&2
+
+if podman volume exists dolidoc; then
+    documents=$(podman volume inspect dolidoc --format '{{.Mountpoint}}')
+    podman unshare rm -f "${documents}/install.lock"
+fi

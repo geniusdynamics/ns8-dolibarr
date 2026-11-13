@@ -18,7 +18,8 @@ reponame="dolibarr"
 # renovate: datasource=npm packageName=corepack
 corepack_version=0.36.0
 # renovate: datasource=docker packageName=docker.io/dolibarr/dolibarr
-DOLIBARR_VERSION=20.0.4
+# 19.0.4: image rebuilt with the PHP2Shell fixes (CVE-2026-109618/109619)
+DOLIBARR_VERSION=19.0.4
 # Create a new empty container image
 container=$(buildah from scratch)
 

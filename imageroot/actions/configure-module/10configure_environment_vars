@@ -6,9 +6,10 @@
 #
 
 import json
+import os
+import secrets
 import sys
 import agent
-import os
 from agent.ldapproxy import Ldapproxy
 
 # Secrets are kept in state/passwords.env (mode 0600), never in the module
@@ -92,7 +93,15 @@ DOLI_ADMIN_LOGIN = data.get("DOLI_ADMIN_LOGIN", "admin")
 DOLI_ADMIN_PASSWORD = data.get("DOLI_ADMIN_PASSWORD", "admin")
 
 agent.set_env("DOLI_ADMIN_LOGIN", DOLI_ADMIN_LOGIN)
-write_secrets({"DOLI_ADMIN_PASSWORD": DOLI_ADMIN_PASSWORD})
+# DOLI_INSTANCE_UNIQUE_ID is the key of dolEncrypt(); the image falls back to
+# the public value "myinstanceuniquekey" without it. Generated once, kept with
+# the other secrets, never changed.
+try:
+    _current = agent.read_envfile(os.path.join(os.environ["AGENT_STATE_DIR"], "passwords.env"))
+except FileNotFoundError:
+    _current = {}
+instance_id = _current.get("DOLI_INSTANCE_UNIQUE_ID") or os.environ.get("DOLI_INSTANCE_UNIQUE_ID") or secrets.token_hex(32)
+write_secrets({"DOLI_ADMIN_PASSWORD": DOLI_ADMIN_PASSWORD, "DOLI_INSTANCE_UNIQUE_ID": instance_id})
 agent.set_env("ADMIN_USERS", data.get("admin_users","administrator").lower())
 agent.set_env("LDAP_DOMAIN", data["ldap_domain"])
 agent.dump_env()

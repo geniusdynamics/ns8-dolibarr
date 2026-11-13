@@ -1,0 +1,19 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Runs before 20restart. Instances created with the tuxgasy image have no
+# instance unique id, so Dolibarr stored its secrets in clear text; the
+# official image would fall back to the public value "myinstanceuniquekey".
+# Generate a key per instance once; clear-text values stay readable.
+
+import os
+import secrets
+import agent
+
+if not os.environ.get("DOLI_INSTANCE_UNIQUE_ID"):
+    agent.set_env("DOLI_INSTANCE_UNIQUE_ID", secrets.token_hex(32))
+    agent.dump_env()
