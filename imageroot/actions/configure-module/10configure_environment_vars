@@ -58,11 +58,14 @@ agent.unset_env("LDAP_GROUP_SEARCH_FILTER")
 
 # Check if an LDAP domain is set:
 
-if ldap_domain:
-    agent.bind_user_domains([ldap_domain])
+# Get LDAP properties. A domain that does not exist (any more) leaves
+# Dolibarr with its local accounts instead of aborting the configuration.
+odom = Ldapproxy().get_domain(ldap_domain) if ldap_domain else None
+if ldap_domain and not odom:
+    print(f"User domain {ldap_domain} not found: LDAP login disabled", file=sys.stderr)
 
-    # Get LDAP properties
-    odom = Ldapproxy().get_domain(ldap_domain)
+if odom:
+    agent.bind_user_domains([ldap_domain])
     base_dn = odom['base_dn']
 
     agent.set_env("DOLI_LDAP_HOST","10.0.2.2")

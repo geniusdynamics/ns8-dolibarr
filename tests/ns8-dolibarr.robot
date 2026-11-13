@@ -13,7 +13,7 @@ Check if ns8-dolibarr is installed correctly
     Set Suite Variable    ${module_id}    ${output.module_id}
 
 Check if kickstart can be configured
-    ${rc} =    Execute Command    api-cli run module/${module_id}/configure-module --data '{"host":"${HOST}","http2https":true,"lets_encrypt":false,"ldap_domain":"ad.domain.org","admin_users":"Administrator,user1"}'
+    ${rc} =    Execute Command    api-cli run module/${module_id}/configure-module --data '{"host":"${HOST}","http2https":true,"lets_encrypt":false,"ldap_domain":"","admin_users":"Administrator,user1"}'
     ...    return_rc=True  return_stdout=False
     Should Be Equal As Integers    ${rc}  0
 
