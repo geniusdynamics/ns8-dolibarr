@@ -17,7 +17,8 @@ reponame="dolibarr"
 # Node.js 25+ no longer ships Corepack, install it from npm
 # renovate: datasource=npm packageName=corepack
 corepack_version=0.36.0
-DOLIBARR_TAG="20.0.4"
+# renovate: datasource=docker packageName=docker.io/dolibarr/dolibarr
+DOLIBARR_VERSION=20.0.4
 # Create a new empty container image
 container=$(buildah from scratch)
 
@@ -49,7 +50,7 @@ buildah config --entrypoint=/ \
 	--label="org.nethserver.authorizations=traefik@node:routeadm cluster:accountconsumer" \
 	--label="org.nethserver.tcp-ports-demand=1" \
 	--label="org.nethserver.rootfull=0" \
-	--label="org.nethserver.images=docker.io/mariadb:10.11.19 docker.io/dolibarr/dolibarr:${DOLIBARR_TAG}" \
+	--label="org.nethserver.images=docker.io/mariadb:10.11.19 docker.io/dolibarr/dolibarr:${DOLIBARR_VERSION}" \
 	"${container}"
 # Commit the image
 buildah commit "${container}" "${repobase}/${reponame}"
