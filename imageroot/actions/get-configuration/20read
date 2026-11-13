@@ -23,7 +23,10 @@ config["host"] = os.getenv("TRAEFIK_HOST","")
 config["http2https"] = os.getenv("TRAEFIK_HTTP2HTTPS") == "True"
 config["lets_encrypt"] = os.getenv("TRAEFIK_LETS_ENCRYPT") == "True"
 config["DOLI_ADMIN_LOGIN"] = os.getenv("DOLI_ADMIN_LOGIN", "")
-config["DOLI_ADMIN_PASSWORD"] = os.getenv("DOLI_ADMIN_PASSWORD", "")
+try:
+    config["DOLI_ADMIN_PASSWORD"] = agent.read_envfile("passwords.env").get("DOLI_ADMIN_PASSWORD", "")
+except FileNotFoundError:
+    config["DOLI_ADMIN_PASSWORD"] = ""
 config["admin_users"] = os.getenv("ADMIN_USERS", "administrator")
 config["ldap_domain"] = os.getenv("LDAP_DOMAIN", "")
 
