@@ -13,6 +13,8 @@ Environment=PODMAN_SYSTEMD_UNIT=%n
 EnvironmentFile=%S/state/environment
 EnvironmentFile=-%S/state/smarthost.env
 EnvironmentFile=-%S/state/discovery_ldap.env
+# DOLI_ADMIN_PASSWORD, kept out of the module environment (mode 0600)
+EnvironmentFile=-%S/state/passwords.env
 WorkingDirectory=%S/state
 Restart=always
 TimeoutStopSec=70
@@ -28,6 +30,7 @@ ExecStart=/usr/bin/podman run --conmon-pidfile %t/dolibarr-app.pid \
     --env DOLI_ADMIN_LOGIN=${DOLI_ADMIN_LOGIN} \
     --env DOLI_ADMIN_PASSWORD=${DOLI_ADMIN_PASSWORD} \
     --env DOLI_URL_ROOT=${DOLI_URL_ROOT} \
+    --env DOLI_INSTANCE_UNIQUE_ID=${DOLI_INSTANCE_UNIQUE_ID} \
     --env PHP_INI_DATE_TIMEZONE=Africa/Nairobi \
     --env DOLI_AUTH='ldap,dolibarr' \
     --env DOLI_LDAP_HOST=${DOLI_LDAP_HOST} \
@@ -35,7 +38,7 @@ ExecStart=/usr/bin/podman run --conmon-pidfile %t/dolibarr-app.pid \
     --env DOLI_LDAP_VERSION=3 \
     --env DOLI_LDAP_SERVER_TYPE=openldap \
     --env DOLI_LDAP_DN=ou=users,cn=users,cn=accounts,${DOLIBARR_LDAP_BASE} \
-    --env DOLI_LDAP_BIND_PASS=${DOLI_LDAP_PASS} \
+    --env DOLI_LDAP_BIND_PASS=${DOLIBARR_LDAP_PASS} \
     --env DOLI_LDAP_BIND_DN=uid=admin,cn=users,cn=accounts,${DOLIBARR_LDAP_USER} \
     --env DOLI_LDAP_DEBUG=true \
     --volume=dolidoc:/var/www/documents \

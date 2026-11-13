@@ -6,10 +6,28 @@
 #
 
 import json
+import os
+import secrets
 import sys
 import agent
-import os
 from agent.ldapproxy import Ldapproxy
+
+# Secrets are kept in state/passwords.env (mode 0600), never in the module
+# environment: agent.set_env() copies it to Redis, readable by every module
+# of the node.
+def write_secrets(values):
+    path = os.path.join(os.environ["AGENT_STATE_DIR"], "passwords.env")
+    try:
+        current = agent.read_envfile(path)
+    except FileNotFoundError:
+        current = {}
+    current.update({key: ("" if value is None else value) for key, value in values.items()})
+    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    with os.fdopen(fd, "w") as fp:
+        for key in sorted(current):
+            fp.write(f"{key}={current[key]}\n")
+    for key in values:
+        agent.unset_env(key)
 
 # Try to parse the stdin as JSON.
 # If parsing fails, output everything to stderr
@@ -29,6 +47,7 @@ agent.unset_env("LDAP_HOSTNAME")
 agent.unset_env("LDAP_PORT")
 agent.unset_env("LDAP_SEARCH_BIND_DN")
 agent.unset_env("LDAP_SEARCH_BIND_PASSWORD")
+agent.unset_env("DOLI_LDAP_BIND_PASS")
 agent.unset_env("LDAP_USER_BASE_DN")
 agent.unset_env("LDAP_MEMBER_ATTRIBUTE")
 agent.unset_env("LDAP_MEMBER_ATTRIBUTE_TYPE")
@@ -49,7 +68,8 @@ if ldap_domain:
     agent.set_env("DOLI_LDAP_HOST","10.0.2.2")
     agent.set_env("DOLI_LDAP_PORT",odom['port'])
     agent.set_env("DOLI_LDAP_BIND_DN",odom['bind_dn'])
-    agent.set_env("DOLI_LDAP_BIND_PASS",odom['bind_password'])
+    # The bind password reaches the container from discovery_ldap.env
+    # (bin/discover-ldap), it is not stored in the module environment
 
     if odom['schema'] == "rfc2307":
         # OpenLDAP specific:
@@ -73,7 +93,15 @@ DOLI_ADMIN_LOGIN = data.get("DOLI_ADMIN_LOGIN", "admin")
 DOLI_ADMIN_PASSWORD = data.get("DOLI_ADMIN_PASSWORD", "admin")
 
 agent.set_env("DOLI_ADMIN_LOGIN", DOLI_ADMIN_LOGIN)
-agent.set_env("DOLI_ADMIN_PASSWORD", DOLI_ADMIN_PASSWORD)
+# DOLI_INSTANCE_UNIQUE_ID is the key of dolEncrypt(); the image falls back to
+# the public value "myinstanceuniquekey" without it. Generated once, kept with
+# the other secrets, never changed.
+try:
+    _current = agent.read_envfile(os.path.join(os.environ["AGENT_STATE_DIR"], "passwords.env"))
+except FileNotFoundError:
+    _current = {}
+instance_id = _current.get("DOLI_INSTANCE_UNIQUE_ID") or os.environ.get("DOLI_INSTANCE_UNIQUE_ID") or secrets.token_hex(32)
+write_secrets({"DOLI_ADMIN_PASSWORD": DOLI_ADMIN_PASSWORD, "DOLI_INSTANCE_UNIQUE_ID": instance_id})
 agent.set_env("ADMIN_USERS", data.get("admin_users","administrator").lower())
 agent.set_env("LDAP_DOMAIN", data["ldap_domain"])
 agent.dump_env()
